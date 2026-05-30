@@ -163,9 +163,7 @@ const CartContent = () => {
                     <TableCell align="center">
                       <TextField
                         type="number"
-                        slotProps={{
-                          htmlInput: { min: 1 },
-                        }}
+                        inputProps={{ min: 1 }}
                         value={item.quantity}
                         onChange={(e) =>
                           handleUpdateQuantity(item._id, parseInt(e.target.value))
@@ -270,3 +268,4 @@ export default function CartPage() {
     </ProtectedRoute>
   );
 }
+

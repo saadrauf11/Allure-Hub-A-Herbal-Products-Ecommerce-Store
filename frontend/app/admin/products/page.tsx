@@ -74,7 +74,7 @@ const ProductManagementContent = () => {
         name: product.name,
         description: product.description,
         price: product.price,
-        category: product.category,
+        category: product.category?._id || '', // Use ID for form
         stock: product.stock,
       });
     } else {
@@ -229,7 +229,7 @@ const ProductManagementContent = () => {
             {products.map((product) => (
               <TableRow key={product._id}>
                 <TableCell>{product.name}</TableCell>
-                <TableCell>{product.category}</TableCell>
+                <TableCell>{product.category?.name || 'N/A'}</TableCell>
                 <TableCell align="right">${product.price}</TableCell>
                 <TableCell align="right">{product.stock}</TableCell>
                 <TableCell align="center">
@@ -293,12 +293,13 @@ const ProductManagementContent = () => {
               required
             />
             <TextField
-              label="Category"
+              label="Category ID"
               name="category"
               value={formData.category}
               onChange={handleFormChange}
               fullWidth
               required
+              helperText="Enter the MongoDB Category ID"
             />
             <TextField
               label="Stock"
@@ -386,3 +387,4 @@ export default function AdminProductsPage() {
     </ProtectedRoute>
   );
 }
+

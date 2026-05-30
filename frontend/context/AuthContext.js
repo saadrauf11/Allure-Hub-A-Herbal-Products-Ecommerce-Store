@@ -6,18 +6,46 @@ import { authAPI } from '../services/api';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(() => {
+    if (typeof window !== 'undefined') {
+    const savedUser = localStorage.getItem('user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    }
+    return null;
+  });
 
-  // Load user from localStorage on mount
+  const [loading, setLoading] = useState(false);
+
+  const [token, setToken] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('accessToken');
+    }
+    return null;
+  });
+
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !!localStorage.getItem('accessToken');
+    }
+      return false;
+  });
+
+  // Load user from localStorage on mount (Keeping useEffect just in case of state sync)
   useEffect(() => {
     const savedToken = localStorage.getItem('accessToken');
     const savedUser = localStorage.getItem('user');
 
     if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      try {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+        setIsAuthenticated(true);
+      } catch (e) {
+        console.error('Failed to parse user from localStorage', e);
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        setIsAuthenticated(false);
+    }
     }
 
     setLoading(false);
@@ -33,20 +61,20 @@ export const AuthProvider = ({ children }) => {
       });
 
       const { user: userData, accessToken, refreshToken } = response.data;
-
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(userData));
 
       setUser(userData);
       setToken(accessToken);
+      setIsAuthenticated(true);
 
       return { success: true, data: userData };
     } catch (error) {
       return {
         success: false,
         message: error.response?.data?.message || 'Signup failed',
-      };
+};
     }
   }, []);
 
@@ -66,13 +94,14 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userData);
       setToken(accessToken);
+      setIsAuthenticated(true);
 
       return { success: true, data: userData };
     } catch (error) {
       return {
         success: false,
         message: error.response?.data?.message || 'Signin failed',
-      };
+  };
     }
   }, []);
 
@@ -83,6 +112,7 @@ export const AuthProvider = ({ children }) => {
 
     setUser(null);
     setToken(null);
+    setIsAuthenticated(false);
   }, []);
 
   const refreshAccessToken = useCallback(async () => {
@@ -96,6 +126,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', newRefreshToken);
       setToken(accessToken);
+      setIsAuthenticated(true);
 
       return true;
     } catch (error) {
@@ -112,9 +143,9 @@ export const AuthProvider = ({ children }) => {
     signin,
     logout,
     refreshAccessToken,
-    isAuthenticated: !!token,
+    isAuthenticated,
     isAdmin: user?.role === 'admin',
-  };
+};
 
   return (
     <AuthContext.Provider value={value}>
@@ -122,3 +153,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+

@@ -23,6 +23,17 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Response interceptor for token refresh on 401
 api.interceptors.response.use(
   (response) => response,
@@ -119,3 +130,4 @@ export const orderAPI = {
 };
 
 export default api;
+
