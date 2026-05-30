@@ -119,9 +119,7 @@ export const ProductCard = ({ product, onAddToCart }) => {
           <TextField
             label="Quantity"
             type="number"
-            slotProps={{
-              htmlInput: { min: 1, max: product.stock },
-            }}
+            inputProps={{ min: 1, max: product.stock }}
             value={quantity}
             onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
             fullWidth
@@ -144,3 +142,4 @@ export const ProductCard = ({ product, onAddToCart }) => {
     </>
   );
 };
+

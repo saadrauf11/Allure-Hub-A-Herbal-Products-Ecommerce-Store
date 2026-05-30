@@ -38,8 +38,8 @@ export default function Products() {
       const response = await productAPI.getAll();
       setProducts(response.data);
 
-      // Extract unique categories
-      const uniqueCategories = [...new Set(response.data.map((p) => p.category))];
+      // Extract unique categories from populated objects
+      const uniqueCategories = [...new Set(response.data.map((p) => p.category?.name).filter(Boolean))];
       setCategories(uniqueCategories);
     } catch (error) {
       setSnackbar({
@@ -63,7 +63,8 @@ export default function Products() {
     }
 
     if (category) {
-      filtered = filtered.filter((p) => p.category === category);
+      // Check against the category name
+      filtered = filtered.filter((p) => p.category?.name === category);
     }
 
     setFilteredProducts(filtered);
@@ -127,10 +128,8 @@ export default function Products() {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           fullWidth
-          slotProps={{
-            select: {
-              native: true,
-            },
+          SelectProps={{
+            native: true,
           }}
         >
           <option value="">All Categories</option>
@@ -172,3 +171,4 @@ export default function Products() {
     </Container>
   );
 }
+
