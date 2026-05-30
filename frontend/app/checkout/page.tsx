@@ -18,6 +18,7 @@ import {
   ListItem,
   ListItemText,
   AlertColor,
+  TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -32,6 +33,7 @@ const CheckoutContent = () => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [shippingDetails, setShippingDetails] = useState({ address: '', phone: '' });
   const [orderConfirm, setOrderConfirm] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as AlertColor });
@@ -74,10 +76,14 @@ const CheckoutContent = () => {
       });
       return;
     }
+    if (!shippingDetails.address || !shippingDetails.phone) {
+      setSnackbar({ open: true, message: 'Please provide address and contact number', severity: 'error' });
+      return;
+    }
 
     setProcessing(true);
     try {
-      const response = await orderAPI.checkout();
+      await orderAPI.checkout({ shipping: shippingDetails });
       setOrderSuccess(true);
       setOrderConfirm(false);
       
@@ -198,13 +204,26 @@ const CheckoutContent = () => {
           <Divider sx={{ my: 3 }} />
 
           {/* Delivery Address */}
-          <Box>
+          <Box sx={{ mt: 4 }}>
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
               Delivery Information
             </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Your order will be delivered to the address on file. Please ensure your contact information is correct.
-            </Typography>
+            <TextField
+            fullWidth
+              label="Shipping Address"
+              margin="normal"
+              value={shippingDetails.address}
+              onChange={(e) => setShippingDetails({...shippingDetails, address: e.target.value})}
+              required
+            />
+            <TextField
+            fullWidth
+              label="Contact Number"
+              margin="normal"
+              value={shippingDetails.phone}
+              onChange={(e) => setShippingDetails({...shippingDetails, phone: e.target.value})}
+              required
+            />
           </Box>
         </Paper>
 
@@ -233,12 +252,11 @@ const CheckoutContent = () => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Total:
-            </Typography>
+          </Typography>
             <Typography variant="h6" sx={{ fontWeight: 600, color: '#d4a574' }}>
               ${total.toFixed(2)}
-            </Typography>
+          </Typography>
           </Box>
-
           <Button
             fullWidth
             variant="contained"
@@ -251,7 +269,7 @@ const CheckoutContent = () => {
             }}
             onClick={() => setOrderConfirm(true)}
             disabled={processing}
-          >
+      >
             Place Order
           </Button>
 
@@ -315,3 +333,4 @@ export default function CheckoutPage() {
     </ProtectedRoute>
   );
 }
+

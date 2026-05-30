@@ -20,6 +20,7 @@ export const Navbar = () => {
   const router = useRouter();
   const { user, logout, isAuthenticated, isAdmin } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [adminAnchor, setAdminAnchor] = useState(null); // New state for Admin Menu
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -27,6 +28,14 @@ export const Navbar = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleAdminMenuOpen = (event) => {
+    setAdminAnchor(event.currentTarget);
+  };
+
+  const handleAdminMenuClose = () => {
+    setAdminAnchor(null);
   };
 
   const handleLogout = () => {
@@ -71,13 +80,23 @@ export const Navbar = () => {
             </Button>
 
             {isAuthenticated && isAdmin && (
-              <Button
-                component={Link}
-                href="/admin/products"
-                sx={{ color: '#d4a574', fontWeight: 500 }}
-              >
-                Admin
-              </Button>
+              <>
+                <Button
+                  onClick={handleAdminMenuOpen}
+                  sx={{ color: '#d4a574', fontWeight: 500 }}
+                >
+                  Admin
+                </Button>
+                <Menu
+                  anchorEl={adminAnchor}
+                  open={Boolean(adminAnchor)}
+                  onClose={handleAdminMenuClose}
+                >
+                  <MenuItem component={Link} href="/admin/products" onClick={handleAdminMenuClose}>Products</MenuItem>
+                  <MenuItem component={Link} href="/admin/categories" onClick={handleAdminMenuClose}>Categories</MenuItem>
+                  <MenuItem component={Link} href="/admin/orders" onClick={handleAdminMenuClose}>Orders</MenuItem>
+                </Menu>
+              </>
             )}
 
             {isAuthenticated && (
@@ -146,3 +165,4 @@ export const Navbar = () => {
     </AppBar>
   );
 };
+

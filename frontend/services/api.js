@@ -129,5 +129,10 @@ export const orderAPI = {
   cancel: (id) => api.delete(`/orders/${id}`),
 };
 
+export const categoryAPI = {
+  getAll: () => api.get('/categories'),
+  create: (data) => api.post('/categories', data),
+};
+
 export default api;
 

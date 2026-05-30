@@ -8,8 +8,6 @@ import {
   Typography,
   Box,
   Alert,
-  ToggleButton,
-  ToggleButtonGroup,
 } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -23,12 +21,9 @@ export default function SignUp() {
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
   });
-  const [role, setRole] = useState('buyer');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -41,11 +36,6 @@ export default function SignUp() {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
@@ -53,10 +43,10 @@ export default function SignUp() {
 
     setLoading(true);
 
-    const result = await signup(formData.name, formData.email, formData.password, role);
+    const result = await signup(formData.name, formData.email, formData.password);
 
     if (result.success) {
-      router.push(role === 'admin' ? '/admin/products' : '/products');
+      router.push('/products');
     } else {
       setError(result.message);
     }
@@ -73,25 +63,10 @@ export default function SignUp() {
 
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="body2" sx={{ mb: 1 }}>
-            Register as:
-          </Typography>
-          <ToggleButtonGroup
-            value={role}
-            exclusive
-            onChange={(e, newRole) => setRole(newRole)}
-            fullWidth
-          >
-            <ToggleButton value="buyer">Buyer</ToggleButton>
-            <ToggleButton value="admin">Admin</ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
-            label="Full Name"
+            label="Name"
             name="name"
             value={formData.name}
             onChange={handleChange}
@@ -114,17 +89,6 @@ export default function SignUp() {
             name="password"
             type="password"
             value={formData.password}
-            onChange={handleChange}
-            margin="normal"
-            required
-            helperText="Minimum 6 characters"
-          />
-          <TextField
-            fullWidth
-            label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
             onChange={handleChange}
             margin="normal"
             required
@@ -160,3 +124,4 @@ export default function SignUp() {
     </Container>
   );
 }
+

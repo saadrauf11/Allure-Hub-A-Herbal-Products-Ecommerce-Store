@@ -9,7 +9,12 @@ const generateTokens = (user) => {
 };
 
 exports.signup = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password } = req.body;
+
+  // Enforce security: Assign role based on email or default to buyer
+  // Prevent users from setting their own role via req.body
+  const role = email.endsWith('@allurehub.com') ? 'admin' : 'buyer';
+
   try {
     let user = await User.findOne({ email });
     if (user) {
@@ -20,7 +25,7 @@ exports.signup = async (req, res) => {
       name,
       email,
       password,
-      role: role || 'buyer',
+      role,
     });
 
     // Password hashing is handled by pre-save hook in User model

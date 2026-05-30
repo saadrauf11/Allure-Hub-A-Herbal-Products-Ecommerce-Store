@@ -10,6 +10,7 @@ import {
   Alert,
   AlertColor,
 } from '@mui/material';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { productAPI, cartAPI } from '@/services/api';
 import { ProductCard } from '@/components/ProductCard';
@@ -145,11 +146,12 @@ export default function Products() {
       {filteredProducts.length > 0 ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 3 }}>
           {filteredProducts.map((product) => (
+            <Link key={product._id} href={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
             <ProductCard
-              key={product._id}
               product={product}
               onAddToCart={handleAddToCart}
             />
+            </Link>
           ))}
         </Box>
       ) : (
