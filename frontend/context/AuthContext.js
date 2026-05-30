@@ -51,13 +51,12 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const signup = useCallback(async (name, email, password, role) => {
+  const signup = useCallback(async (name, email, password) => {
     try {
       const response = await authAPI.signup({
         name,
         email,
         password,
-        role,
       });
 
       const { user: userData, accessToken, refreshToken } = response.data;
@@ -78,12 +77,11 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const signin = useCallback(async (email, password, role) => {
+  const signin = useCallback(async (email, password) => {
     try {
       const response = await authAPI.signin({
         email,
         password,
-        role,
       });
 
       const { user: userData, accessToken, refreshToken } = response.data;

@@ -8,8 +8,6 @@ import {
   Typography,
   Box,
   Alert,
-  ToggleButton,
-  ToggleButtonGroup,
 } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -23,10 +21,8 @@ export default function SignIn() {
     email: '',
     password: '',
   });
-  const [role, setRole] = useState('buyer');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -40,10 +36,12 @@ export default function SignIn() {
     setError('');
     setLoading(true);
 
-    const result = await signin(formData.email, formData.password, role);
+    // Signin without manual role selection
+    const result = await signin(formData.email, formData.password);
 
     if (result.success) {
-      router.push(role === 'admin' ? '/admin/products' : '/products');
+      // Role is determined by the user object returned from the backend
+      router.push(result.data.role === 'admin' ? '/admin/products' : '/products');
     } else {
       setError(result.message);
     }
@@ -62,17 +60,8 @@ export default function SignIn() {
 
         <Box sx={{ mb: 3 }}>
           <Typography variant="body2" sx={{ mb: 1 }}>
-            Sign in as:
+            Sign in
           </Typography>
-          <ToggleButtonGroup
-            value={role}
-            exclusive
-            onChange={(e, newRole) => setRole(newRole)}
-            fullWidth
-          >
-            <ToggleButton value="buyer">Buyer</ToggleButton>
-            <ToggleButton value="admin">Admin</ToggleButton>
-          </ToggleButtonGroup>
         </Box>
 
         <form onSubmit={handleSubmit}>
@@ -127,3 +116,4 @@ export default function SignIn() {
     </Container>
   );
 }
+

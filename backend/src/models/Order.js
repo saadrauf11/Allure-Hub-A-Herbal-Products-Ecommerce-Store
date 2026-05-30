@@ -12,21 +12,10 @@ const orderSchema = new mongoose.Schema(
         productId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Product',
-          required: true,
         },
-        productName: {
-          type: String,
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
+        productName: String,
+        quantity: Number,
+        price: Number,
       },
     ],
     status: {
@@ -34,15 +23,10 @@ const orderSchema = new mongoose.Schema(
       enum: ['pending', 'sent', 'delivered'],
       default: 'pending',
     },
-    totalPrice: {
-      type: Number,
-      required: true,
-    },
-    paymentMethod: {
-      type: String,
-      enum: ['COD'],
-      default: 'COD',
-    },
+    totalPrice: Number,
+    shippingAddress: String,
+    contactNumber: String,
+    paymentMethod: String,
     createdAt: {
       type: Date,
       default: Date.now,
@@ -52,3 +36,4 @@ const orderSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('Order', orderSchema);
+

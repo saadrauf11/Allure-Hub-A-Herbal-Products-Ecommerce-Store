@@ -5,6 +5,7 @@ const Product = require('../models/Product');
 // Checkout - Create order from cart
 exports.checkout = async (req, res) => {
   try {
+    const { shipping } = req.body;
     const cart = await Cart.findOne({ userId: req.userId }).populate(
       'items.productId'
     );
@@ -47,6 +48,8 @@ exports.checkout = async (req, res) => {
       userId: req.userId,
       items: orderItems,
       totalPrice,
+      shippingAddress: shipping?.address,
+      contactNumber: shipping?.phone,
       paymentMethod: 'COD',
       status: 'pending',
     });
@@ -157,3 +160,4 @@ exports.cancelOrder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
